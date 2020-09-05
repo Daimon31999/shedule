@@ -75,8 +75,8 @@ const between = (date, hmin, mmin, hmax, mmax) => {
 const app = async () => {
   // узнать какая сейчас пара
   let date = { hour: new Date().getHours(), minutes: new Date().getMinutes() }
-  date.hour = 9
-  date.minutes = 35
+  // date.hour = 9
+  // date.minutes = 35
   let para = 1
 
   // Пары еще не начались (12:00 - 8:00)
