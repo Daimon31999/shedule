@@ -46,8 +46,8 @@ ${COLOR.FORE_RED_BOLD}${para}${COLOR.RESET} ${para_text} | ${time_text} ${COLOR.
 }
 
 const between = (date, hmin, mmin, hmax, mmax) => {
-  let hour = date.hour
-  let minutes = date.minutes
+  // let hour = date.hour
+  // let minutes = date.minutes
   hmin = parseInt(hmin)
   mmin = parseInt(mmin)
   hmax = parseInt(hmax)
