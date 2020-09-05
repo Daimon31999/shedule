@@ -11,4 +11,10 @@
 # Usage
 1. Install app on your computer
 2. Change **timetable.txt**, if you want (observing the design)
-H
+
+# Features
+## Automatic detection of: 
+* time remaining 
+* break length
+* lesson number 
+* end of lesson
