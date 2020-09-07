@@ -1,5 +1,6 @@
 const COLOR = require('./color')
 const { time } = require('console')
+const { exec } = require("child_process");
 
 const timer = (
   minutes,
@@ -19,14 +20,14 @@ const timer = (
       let timetable_arr = timetable.split('\n')
 
       console.clear()
-      
-      let str = 
-      `
-${(1 === para ? `${COLOR.FORE_RED_BOLD}1) ${timetable_arr[0]} < ${COLOR.RESET}`: `1) ${timetable_arr[0]}`)}
-${(2 === para ? `${COLOR.FORE_RED_BOLD}2) ${timetable_arr[1]} < ${COLOR.RESET}`: `2) ${timetable_arr[1]}`)}
-${(3 === para ? `${COLOR.FORE_RED_BOLD}3) ${timetable_arr[2]} < ${COLOR.RESET}`: `3) ${timetable_arr[2]}`)}
-${(4 === para ? `${COLOR.FORE_RED_BOLD}4) ${timetable_arr[3]} < ${COLOR.RESET}`: `4) ${timetable_arr[3]}`)}
-${(5 === para ? `${COLOR.FORE_RED_BOLD}5) ${timetable_arr[4]} < ${COLOR.RESET}`: `5) ${timetable_arr[4]}`)}
+
+      let str =
+        `
+${(1 === para ? `${COLOR.FORE_RED_BOLD}1) ${timetable_arr[0]} < ${COLOR.RESET}` : `1) ${timetable_arr[0]}`)}
+${(2 === para ? `${COLOR.FORE_RED_BOLD}2) ${timetable_arr[1]} < ${COLOR.RESET}` : `2) ${timetable_arr[1]}`)}
+${(3 === para ? `${COLOR.FORE_RED_BOLD}3) ${timetable_arr[2]} < ${COLOR.RESET}` : `3) ${timetable_arr[2]}`)}
+${(4 === para ? `${COLOR.FORE_RED_BOLD}4) ${timetable_arr[3]} < ${COLOR.RESET}` : `4) ${timetable_arr[3]}`)}
+${(5 === para ? `${COLOR.FORE_RED_BOLD}5) ${timetable_arr[4]} < ${COLOR.RESET}` : `5) ${timetable_arr[4]}`)}
 
 ${COLOR.FORE_RED_BOLD}${para}${COLOR.RESET} ${para_text} | ${time_text} ${COLOR.FORE_ORANGE_BOLD}${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}${COLOR.RESET}
 `
@@ -61,22 +62,35 @@ const between = (date, hmin, mmin, hmax, mmax) => {
   let date_min_difference = current_date.getTime() - min_date.getTime()
 
   // урок
-  if (date_max_difference >= 0 && date_min_difference >= 0 ) {
+  if (date_max_difference >= 0 && date_min_difference >= 0) {
     return 1
   }
   // перемена
-  else if(date_max_difference > -600000 && date_max_difference < 500) {
-  return 0    
+  else if (date_max_difference > -600000 && date_max_difference < 500) {
+    return 0
   }
   // не попал
   else return -1
+}
+
+const play = (music) => {
+  exec(`afplay ${music}`, (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+  });
 }
 
 const app = async () => {
   // узнать какая сейчас пара
   let date = { hour: new Date().getHours(), minutes: new Date().getMinutes() }
   // date.hour = 9
-  // date.minutes = 35
+  // date.minutes = 29
   let para = 1
 
   // Пары еще не начались (12:00 - 8:00)
@@ -102,8 +116,8 @@ const app = async () => {
   // Считать время перемены
   const peremena = (para) => {
     let row1 = cp_timetable[para - 1]
-    let row2 = cp_timetable[para]  
-    try {  
+    let row2 = cp_timetable[para]
+    try {
       // hmax = 9
       var hmax1 = row1.split('-')[1].split(':')[0]
       // mmax = 30
@@ -128,7 +142,7 @@ const app = async () => {
     diff = new Date(diff).getMinutes()
     return diff
   }
-  
+
 
   for (let i = 0; i < cp_timetable.length; i++) {
     // row = 8:00-9:30
@@ -149,7 +163,7 @@ const app = async () => {
       let time_max = new Date((hmax * 60 * 60 * 1000) + (mmax * 60 * 1000))
 
       time_remaining = new Date(time_max.getTime() - time_current.getTime())
-      time_remaining = ((time_remaining.getHours() - 3) * 60 ) + time_remaining.getMinutes()
+      time_remaining = ((time_remaining.getHours() - 3) * 60) + time_remaining.getMinutes()
 
       // i + 1 т.к i начинается с нуля
       para = i + 1
@@ -161,7 +175,7 @@ const app = async () => {
       let time_max = new Date((hmax * 60 * 60 * 1000) + (mmax * 60 * 1000))
 
       time_remaining = new Date(Math.abs(time_max.getTime() - time_current.getTime()))
-      time_remaining = ((time_remaining.getHours() - 3) * 60 ) + time_remaining.getMinutes()
+      time_remaining = ((time_remaining.getHours() - 3) * 60) + time_remaining.getMinutes()
 
       time_remaining = Math.abs(peremena(para) - time_remaining)
 
@@ -176,7 +190,9 @@ const app = async () => {
 
   while (para < 6) {
     await timer(time_remaining, para, `осталось`, `пара`, timetable)
+    play('bell-short.mp3')
     await timer(peremena(para), para++, 'осталось', 'перемена', timetable)
+    play('bell-short.mp3')
     // await timer(0.05, para, `осталось`, `пара`, timetable)
     // await timer(peremena(para), para++, 'осталось', 'перемена', timetable)
   }
