@@ -1,5 +1,4 @@
 const COLOR = require('./color')
-const { time } = require('console')
 const { exec } = require("child_process");
 
 const timer = (
@@ -21,6 +20,7 @@ const timer = (
 
       console.clear()
 
+
       let str =
         `
 ${(1 === para ? `${COLOR.FORE_RED_BOLD}1) ${timetable_arr[0]} < ${COLOR.RESET}` : `1) ${timetable_arr[0]}`)}
@@ -33,7 +33,6 @@ ${COLOR.FORE_RED_BOLD}${para}${COLOR.RESET} ${para_text} | ${time_text} ${COLOR.
 `
       console.clear()
       console.log(str)
-
       if (count === seconds) {
         resolve(1) // 1 = ok
         clearInterval(myVar)
@@ -42,7 +41,7 @@ ${COLOR.FORE_RED_BOLD}${para}${COLOR.RESET} ${para_text} | ${time_text} ${COLOR.
     }
 
     // prints timer instantly
-    let myVar = setInterval(x, 1000)
+    let myVar = setInterval(x, 100)
   })
 }
 
@@ -73,28 +72,69 @@ const between = (date, hmin, mmin, hmax, mmax) => {
   else return -1
 }
 
-const play = (music) => {
-  exec(`afplay ${music}`, (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-  });
+const player = () => {
+  const fs = require('fs')
+  let soundPath = './bell-short.mp3'
+
+  /* MAC PLAY COMMAND */
+  const macPlayCommand = () => `afplay ${soundPath}`
+
+  /* WINDOW PLAY COMMANDS */
+  const addPresentationCore = `Add-Type -AssemblyName presentationCore;`
+  const createMediaPlayer = `$player = New-Object system.windows.media.mediaplayer;`
+  const loadAudioFile = (soundPath) => `$player.open('${soundPath}');`
+  const playAudio = `$player.Play();`
+  const stopAudio = (duration = 1) =>
+    `Start-Sleep 1; Start-Sleep -s ${duration};Exit;`
+
+  const windowPlayCommand = (duration = 2) =>
+    `powershell -c ${addPresentationCore} ${createMediaPlayer} ${loadAudioFile(
+      soundPath
+    )} ${playAudio} ${stopAudio(duration)}`
+
+  /* LINUX PLAY COMMANDS */
+  const linuxPlayCommand = () =>
+    `aplay ${soundPath}`
+
+  // Check what system it is
+  let playCommand
+  switch (process.platform) {
+    case 'win32':
+      playCommand = windowPlayCommand()
+      break
+    case 'linux':
+      playCommand = linuxPlayCommand()
+      break
+    case 'darwin':
+      playCommand = macPlayCommand()
+  }
+
+  return {
+    play: () => {
+      exec(playCommand, (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+      });
+    },
+  }
 }
+
 
 const app = async () => {
   // узнать какая сейчас пара
   let date = { hour: new Date().getHours(), minutes: new Date().getMinutes() }
-  // date.hour = 9
-  // date.minutes = 29
+  date.hour = 11
+  date.minutes = 9
   let para = 1
 
   // Пары еще не начались (12:00 - 8:00)
-  if (between(date, 23, 59, 7, 59) === 1) {
+  if (between(date, 0, 1, 7, 59) === 1) {
     console.clear()
     console.log(`${COLOR.FORE_GREEN_BOLD}Пары еще не начались 🤗${COLOR.RESET}`)
     process.exit()
@@ -188,11 +228,15 @@ const app = async () => {
     }
   }
 
+  const sound = player()
+
   while (para < 6) {
     await timer(time_remaining, para, `осталось`, `пара`, timetable)
-    play('bell-short.mp3')
+    sound.play()
     await timer(peremena(para), para++, 'осталось', 'перемена', timetable)
-    play('bell-short.mp3')
+    sound.play()
+    time_remaining = 90
+
     // await timer(0.05, para, `осталось`, `пара`, timetable)
     // await timer(peremena(para), para++, 'осталось', 'перемена', timetable)
   }
@@ -201,4 +245,12 @@ const app = async () => {
   console.log(`\n${COLOR.FORE_GREEN_BOLD}Иди домой 🤟🥳${COLOR.RESET}`)
 }
 
-app()
+var stayAwake = require('stay-awake');
+
+// prevent auto sleep 
+stayAwake.prevent(function (err, data) {
+  // handle error
+  app()
+
+});
+
