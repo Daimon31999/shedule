@@ -17,6 +17,8 @@ TimeTable is console app for students, that save your time and makes your more o
 
 # Features
 ## Automatic detection of: 
+* sounds
+* cross platform (Linux, Windows, macOS
 * time remaining 
 * break length
 * lesson number 
