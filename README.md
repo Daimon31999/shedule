@@ -1,6 +1,9 @@
 
 <h1 align="center">TimeTable ⏰</h1>
 
+# About
+TimeTable is console app for students, that save your time and makes your more orginized.
+
 # Screenshots
 <div align="midle">
   <img src="./screen1.png" width='300px' height='150px' />
