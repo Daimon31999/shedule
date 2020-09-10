@@ -2,7 +2,7 @@
 <h1 align="center">TimeTable ⏰</h1>
 
 # About
-TimeTable is console app for students, that save your time and makes your more orginized.
+TimeTable is console app for students, that save your time and makes your more organized.
 
 # Screenshots
 <div align="midle">
