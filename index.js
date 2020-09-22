@@ -9,8 +9,16 @@ const timer = (
   timetable
 ) => {
   let count = 0
+  // start time
+  let startTime = new Date()
   return new Promise((resolve) => {
     function x() {
+      let currentDate = new Date()
+      if (startTime.getMinutes() + new Date(count).getMinutes() !== currentDate.getMinutes()) {
+        process.exit(0)
+        // console.log('hello');
+        // minutes = (currentDate.getMinutes() - (startTime.getMinutes() - new Date(count).getMinutes()))
+      }
       let seconds = minutes * 60 * 1000 // 5 min * 60 sec * 1000 millisec
       let date = new Date(seconds - 180 * 60 * 1000)
       date = parseInt(date.getTime(), 10) - count // translate time in number and subtract
@@ -32,7 +40,9 @@ ${(5 === para ? `${COLOR.FORE_RED_BOLD}5) ${timetable_arr[4]} < ${COLOR.RESET}` 
 ${COLOR.FORE_RED_BOLD}${para}${COLOR.RESET} ${para_text} | ${time_text} ${COLOR.FORE_ORANGE_BOLD}${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}${COLOR.RESET}
 `
       console.clear()
+
       console.log(str)
+
       if (count === seconds) {
         resolve(1) // 1 = ok
         clearInterval(myVar)
@@ -41,7 +51,8 @@ ${COLOR.FORE_RED_BOLD}${para}${COLOR.RESET} ${para_text} | ${time_text} ${COLOR.
     }
 
     // prints timer instantly
-    let myVar = setInterval(x, 100)
+    x()
+    let myVar = setInterval(x, 1000)
   })
 }
 
@@ -129,7 +140,7 @@ const player = () => {
 const app = async () => {
   // узнать какая сейчас пара
   let date = { hour: new Date().getHours(), minutes: new Date().getMinutes() }
-  date.hour = 11
+  date.hour = 10
   date.minutes = 9
   let para = 1
 
@@ -246,6 +257,7 @@ const app = async () => {
 }
 
 var stayAwake = require('stay-awake');
+const { start } = require('repl');
 
 // prevent auto sleep 
 stayAwake.prevent(function (err, data) {
