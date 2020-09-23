@@ -140,8 +140,8 @@ const player = () => {
 const app = async () => {
   // узнать какая сейчас пара
   let date = { hour: new Date().getHours(), minutes: new Date().getMinutes() }
-  date.hour = 10
-  date.minutes = 9
+  // date.hour = 10
+  // date.minutes = 9
   let para = 1
 
   // Пары еще не начались (12:00 - 8:00)
