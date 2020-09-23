@@ -14,7 +14,7 @@ const timer = (
   return new Promise((resolve) => {
     function x() {
       let currentDate = new Date()
-      if (startTime.getMinutes() + new Date(count).getMinutes() !== currentDate.getMinutes()) {
+      if (((startTime.getMinutes() + new Date(count).getMinutes()) - currentDate.getMinutes()) > 10) {
         process.exit(0)
         // console.log('hello');
         // minutes = (currentDate.getMinutes() - (startTime.getMinutes() - new Date(count).getMinutes()))
